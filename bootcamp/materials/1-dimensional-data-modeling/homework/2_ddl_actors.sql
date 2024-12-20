@@ -1,6 +1,6 @@
 WITH yesterday AS (
     SELECT * FROM actors
-    WHERE current_year = 1969
+    WHERE current_year = 1979
 ),
 
 today AS (
@@ -17,7 +17,7 @@ today AS (
         max(year) AS current_year
     --, count(*) AS n_films
     FROM actor_films
-    WHERE year = 1970
+    WHERE year = 1980
     GROUP BY actorid
 
 )

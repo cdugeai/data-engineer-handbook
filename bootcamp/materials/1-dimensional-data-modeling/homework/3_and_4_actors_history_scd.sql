@@ -23,7 +23,7 @@ WITH current_and_previous AS (
             )
         AS quality_class_previous
     FROM actors
-    WHERE current_year <= 1973
+    WHERE current_year <= 1979
 ),
 
 changing_indicators AS (
@@ -80,14 +80,14 @@ changes_combined_cnt AS (
     ORDER BY actorid ASC, current_year ASC
 )
 
-INSERT INTO public.actors_history_scd
+--INSERT INTO public.actors_history_scd
 SELECT
     actorid,
     quality_class,
     is_active,
     min(current_year) AS start_date,
     max(current_year) AS end_date,
-    1973 AS current_year
+    1979 AS current_year
 FROM changes_combined_cnt
 GROUP BY actorid, changes_combined, is_active, quality_class
 ORDER BY actorid, changes_combined
