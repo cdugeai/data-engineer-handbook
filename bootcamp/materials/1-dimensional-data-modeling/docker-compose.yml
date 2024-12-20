@@ -1,8 +1,7 @@
 services:
-  postgres:
-    image: postgres:14
+  bootcamp-postgres-lab1:
+    image: postgres:14-alpine
     restart: on-failure
-    container_name: ${DOCKER_CONTAINER}
     env_file:
       - .env
     environment:
@@ -15,18 +14,7 @@ services:
       - ./:/bootcamp/
       - ./data.dump:/docker-entrypoint-initdb.d/data.dump
       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
-      - postgres-data:/var/lib/postgresql/data
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: on-failure
-    container_name: pgadmin
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
-    ports:
-      - "${PGADMIN_PORT}:80"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - bootcamp-data-lab1:/var/lib/postgresql/data
+
 volumes:
-  postgres-data:
-  pgadmin-data:
+  bootcamp-data-lab1:
