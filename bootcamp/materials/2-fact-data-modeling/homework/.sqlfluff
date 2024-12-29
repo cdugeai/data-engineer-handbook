@@ -1,0 +1,10 @@
+[sqlfluff]
+
+templater = jinja
+dialect = postgres
+
+exclude_rules = ST06
+
+[sqlfluff:rules:capitalisation.keywords]
+
+capitalisation_policy = upper
