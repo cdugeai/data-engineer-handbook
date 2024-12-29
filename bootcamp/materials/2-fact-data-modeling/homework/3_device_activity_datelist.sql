@@ -39,6 +39,7 @@ t_events AS (
         device_id,
         event_time::timestamp AS event_time
     FROM deduped_events
+    WHERE user_id IS NOT null
     ORDER BY user_id
 ),
 
@@ -47,6 +48,7 @@ t_devices AS (
         device_id,
         browser_type
     FROM deduped_devices
+    --where browser_type is not null
 ),
 
 events_with_browser_type AS (
@@ -58,10 +60,12 @@ events_with_browser_type AS (
         e.user_id
     FROM t_events AS e
     LEFT JOIN t_devices AS d ON e.device_id = d.device_id
+    where browser_type is not null
 ),
 
 yesterday AS (
-    SELECT * from user_devices_cumulated where current_day='2023-01-03'::date
+    SELECT * FROM user_devices_cumulated
+    WHERE current_day = '2023-01-09'::date
 ),
 
 today AS (
@@ -69,9 +73,9 @@ today AS (
         user_id,
         browser_type,
         array_agg(event_time) AS device_activity_datelist,
-        '2023-01-04'::date AS current_day
+        '2023-01-10'::date AS current_day
     FROM events_with_browser_type
-    WHERE date_trunc('day', event_time) = '2023-01-04'::date
+    WHERE date_trunc('day', event_time) = '2023-01-10'::date
     GROUP BY user_id, browser_type
 )
 

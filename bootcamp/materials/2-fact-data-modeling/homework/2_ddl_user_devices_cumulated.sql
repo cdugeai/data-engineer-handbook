@@ -4,5 +4,6 @@ CREATE TABLE user_devices_cumulated (
     user_id numeric,
     browser_type text,
     device_activity_datelist date [],
-    current_day date
+    current_day date,
+    PRIMARY KEY (user_id, browser_type, current_day)
 );
