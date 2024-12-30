@@ -65,19 +65,20 @@ events_with_browser_type AS (
 
 yesterday AS (
     SELECT * FROM user_devices_cumulated
-    WHERE current_day = '2023-01-09'::date
+    WHERE current_day = ('2023-01-07'::date - interval '1 day')
 ),
 
 today AS (
     SELECT
         user_id,
         browser_type,
-        array_agg(event_time) AS device_activity_datelist,
-        '2023-01-10'::date AS current_day
+        ARRAY[date_trunc('day', event_time)::date] AS device_activity_datelist,
+        date_trunc('day', event_time)::date AS current_day
     FROM events_with_browser_type
-    WHERE date_trunc('day', event_time) = '2023-01-10'::date
-    GROUP BY user_id, browser_type
+    WHERE date_trunc('day', event_time) = '2023-01-07'::date
+    GROUP BY user_id, browser_type, date_trunc('day', event_time)
 )
+
 
 INSERT INTO user_devices_cumulated
 
@@ -87,7 +88,7 @@ SELECT
     CASE
         WHEN y.device_activity_datelist IS null THEN t.device_activity_datelist
         WHEN t.device_activity_datelist IS null THEN y.device_activity_datelist
-        ELSE array_cat(y.device_activity_datelist, t.device_activity_datelist)
+        ELSE array_cat(t.device_activity_datelist, y.device_activity_datelist)
     END AS device_activity_datelist,
     coalesce(
         t.current_day, y.current_day + interval '1 day'
