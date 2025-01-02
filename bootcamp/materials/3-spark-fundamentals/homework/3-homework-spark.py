@@ -3,7 +3,7 @@
 
 # ## SPARK homework
 
-# In[13]:
+# In[1]:
 
 
 from pyspark.sql import SparkSession
@@ -30,7 +30,7 @@ medals = spark.read.csv("/home/iceberg/data/medals.csv", header=True, inferSchem
 maps = spark.read.csv("/home/iceberg/data/maps.csv", header=True, inferSchema=True)
 
 
-# In[14]:
+# In[3]:
 
 
 # Q2. Explicitly broadcast JOINs `medals` and `maps`
@@ -40,7 +40,7 @@ medals_broadcast = broadcast(medals.withColumnRenamed("name", "medalname"))
 maps_broadcast = broadcast(maps.withColumnRenamed("name", "mapname"))
 
 
-# In[5]:
+# In[4]:
 
 
 # Create the 4 bucketed tables
@@ -53,7 +53,7 @@ spark.sql("DROP TABLE IF EXISTS bootcamp.medals_matches_players_bucketed")
 medals_matches_players.write.bucketBy(16, "match_id").mode("overwrite").saveAsTable("bootcamp.medals_matches_players_bucketed")
 
 
-# In[6]:
+# In[5]:
 
 
 # Loading the bucketed tables
@@ -63,7 +63,7 @@ matches_bucketed = spark.read.table("bootcamp.matches_bucketed")
 medals_matches_players_bucketed = spark.read.table("bootcamp.medals_matches_players_bucketed")
 
 
-# In[7]:
+# In[6]:
 
 
 # Q3. Bucket join `match_details`, `matches`, and `medal_matches_players` on `match_id` with `16` buckets
@@ -75,19 +75,19 @@ analytical_df = match_details_bucketed \
     .join(maps_broadcast, "mapid", "inner")
 
 
-# In[8]:
+# In[7]:
 
 
-# Q4.1. Player most kills
+# Q4.1. Player best average kills
 
 analytical_df \
     .groupBy("player_gamertag") \
-    .agg(sum("player_total_kills").alias("metric_player_total_kills")) \
-    .orderBy(desc("metric_player_total_kills")) \
+    .agg(avg("player_total_kills").alias("metric_player_avg_kills")) \
+    .orderBy(desc("metric_player_avg_kills")) \
     .head(3)
 
 
-# In[9]:
+# In[8]:
 
 
 # Q4.2. Playlist most played
@@ -99,7 +99,7 @@ analytical_df \
     .head(3)
 
 
-# In[10]:
+# In[9]:
 
 
 # Q4.3. Map most played
@@ -111,7 +111,7 @@ analytical_df \
     .head(3)
 
 
-# In[11]:
+# In[10]:
 
 
 # Q4.4. Most common maps played when medal "Killing Spree" is earned
@@ -124,7 +124,7 @@ analytical_df \
     .head(3)
 
 
-# In[12]:
+# In[11]:
 
 
 # Q5. Get size when repartitionning of different columns
@@ -145,4 +145,10 @@ for partition_column in ["playlist_id", "mapid", "match_id", "player_gamertag"]:
     spark.sql("SELECT SUM(file_size_in_bytes) as size, COUNT(1) as num_files, '"+partition_column+"' as partitioned_by FROM demo.bootcamp.analytical_df_partitionned_test.files").show()
 
 print("Size looks smaller with partition on match_id")
+
+
+# In[ ]:
+
+
+
 
