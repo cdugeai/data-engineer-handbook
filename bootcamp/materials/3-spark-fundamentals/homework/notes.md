@@ -75,6 +75,58 @@ Use `.sortWithPartitions()` and **NOT** global `.sort()`
 In query plan, *Explain* means *shuffle*
 In query plan, *Project* means *SELECT*
 
-Stop at 1:05
+Iceberg: sort will shrink data size. Sort by lowest cardinality first to the highest.
+
+## Lecture 2
+
+Spark Server vs Notebooks.
+Temporary View: like CTE. **RE-computed** for each downstream use **unless it is cached**
+Caching storage level: MEMORY_ONLY, DISK_ONLY (like materailized view), MEMORY_AND_DISK (default)
+If caching df to disk, should replace by staging table. Caching only to memory.
+Data stays partitions when cached VS in **broadcast JOIN** where all data sent to single executor. So can cached high volume bcs partitioned.
+
+
+Broadcast **prevent shuffle**
+Broadcast join threshold: `sparl.sql.autoBroadcastJoinThreshold`, default 10Mo. Or use `broadcast(df)`
+
+UDFs: User Defined Functions
+Dataset API, only in Scala.
+
+Dataframe vs Dataset vs SparkSQL
+- SparkSQL: lowest barrier to entry. Good if DScintist work on this too. only need SQL.
+- Dataframe: can modularize code, test code, create functions.
+- Dataset: Scala only. Best for pipelines that need unit test. Can easily create mock data. Handles NULLs better.
+
+Parquet: **run-length encoding** -> powerful compression. Don't use `.sort()` but `.sortWithinPartitions()`
+Iceberg uses parquet as default file format.
+
+Spark Tuning: 
+- executor memory: don't set 16GB
+- driver memory: dont bump it, unless using `df.collect()` or very complex job
+- shuffle partitions: default 200. Rule of thumb: around 100 MB per partition
+- Adaptative Query Execution (AQE): use with skewed datasets
+
+## Lab 2
+
+Dataset API Scala `user_id.getOrElse(deefault_value)` is like COALESCE
+Dataset API Scala `user_id.get` gives the content of an *Option*
+Cache: `df.cache()`
+Use 
+```scala
+// Use
+df.write.mode("overwrite").saveAsTable("my_schema.tablename1")
+// not
+df.persist(StorageLevele.DISK_ONLY)
+```
+
+Bucket joins: `PARTITIONED BY (col_1, col_2, bucket(16, col_3))`
+
+## Lecture 2
+
+Unit + integration tests.
+Catch bug in prod: use **write-audit-publish pattern**.
+
+SE has more quality standards than DE
+
 
 
