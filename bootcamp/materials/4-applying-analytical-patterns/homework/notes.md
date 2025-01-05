@@ -42,3 +42,16 @@ Window based analysis: DoD/WoW/MoM/YoY, rolling sum/average, rank.
 
 # Lecture 2
 
+Funnels. 
+use `COUNT(CASE WHEN)` to reduce nb of table scans
+Advanced sql: 
+- grouping: GROUPING SETS, GROUP BY CUBE, GROUP BY ROLLUP (multiple aggregations in on query without union all)
+- self joins
+- window functions: lag, lead, ROWS
+- CROSS JOIN UNNEST (same as LATERAL VIEW EXPLODE)
+
+Before using GROUPIN SETS, COALESCE grouping column to default value (ex: 'NA'). 
+GROUP BY ROLLUP -> use for hierachycla data (ex: country, state, city). 
+Dont use rank, use DENSE_RANK or ROWNUMBER
+
+
